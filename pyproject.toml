@@ -14,6 +14,7 @@ taskipy = "^1.8.1"
 python-jose = {extras = ["cryptography"], version = "^3.3.0"}
 passlib = {extras = ["bcrypt"], version = "^1.7.4"}
 python-multipart = "^0.0.5"
+dependency-injector = "^4.36.0"
 
 [tool.poetry.dev-dependencies]
 mypy = "^0.910"
