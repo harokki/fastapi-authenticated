@@ -1,0 +1,23 @@
+{
+  "python.formatting.provider": "black",
+  "python.linting.enabled": true,
+  "python.linting.flake8Args": ["--max-line-length 88"],
+  "python.linting.flake8Enabled": true,
+  "python.linting.mypyEnabled": true,
+  "editor.rulers": [88, 119],
+  "editor.tabSize": 4,
+  "python.analysis.logLevel": "Warning",
+  "python.analysis.memory.keepLibraryAst": true,
+  "python.autoComplete.addBrackets": true,
+  "python.linting.banditEnabled": true,
+  "python.terminal.activateEnvInCurrentTerminal": true,
+  "python.testing.pytestEnabled": true,
+  "python.pythonPath": "~/work/fastapi-authenticated/.venv/bin/python3.9",
+  "python.autoComplete.extraPaths": [
+    "~/work/fastapi-authenticated/.venv/lib/python3.9/site-packages"
+  ],
+  "python.analysis.extraPaths": [
+    "~/work/fastapi-authenticated/.venv/lib/python3.9/site-packages"
+  ],
+  "python.analysis.completeFunctionParens": true
+}
