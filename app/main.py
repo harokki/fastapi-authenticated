@@ -84,15 +84,6 @@ def create_access_token(data: dict, expires_delta: Optional[timedelta] = None):
     return encoded_jwt
 
 
-def fake_decoded_token(token: str) -> User:
-    user = get_user(fake_users_db, token)
-    return user
-
-
-def fake_hash_password(password: str) -> str:
-    return "fakehashed" + password
-
-
 async def get_current_user(token: str = Depends(oauth2_schema)) -> User:
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
@@ -119,6 +110,11 @@ async def get_current_active_user(current_user: User = Depends(get_current_user)
     if current_user.disabled:
         raise HTTPException(status_code=400, detail="Inactive user")
     return current_user
+
+
+@app.get("/")
+async def read_root(token: str = Depends(oauth2_schema)):
+    return {"token": token}
 
 
 @app.post("/token", response_model=Token)
