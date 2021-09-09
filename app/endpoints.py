@@ -8,17 +8,6 @@ from app.services.login_service import LoginService
 
 router = APIRouter()
 
-hashed = "$2b$12$EixZaYVK1fsbw1ZfbX3OXePaWxn96p36WQoeG6Lruj3vjPGga31lW"
-fake_users_db = {
-    "johndoe": {
-        "username": "johndoe",
-        "full_name": "John Doe",
-        "email": "johndoe@example.com",
-        "hashed_password": hashed,
-        "disabled": False,
-    }
-}
-
 oauth2_schema = OAuth2PasswordBearer(tokenUrl="token")
 
 
@@ -33,9 +22,7 @@ async def login(
     form_data: OAuth2PasswordRequestForm = Depends(),
     login_service: LoginService = Depends(Provide[Container.login_service]),
 ):
-    user = login_service.authenticate_user(
-        fake_users_db, form_data.username, form_data.password
-    )
+    user = login_service.authenticate_user(form_data.username, form_data.password)
     if not user:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,

@@ -4,6 +4,7 @@ from jose import jwt
 from passlib.context import CryptContext
 
 from app.api_schema import UserInDB
+from app.domains.repositories.user_repository import UserRepository
 
 SECRET_KEY = "a5dc7fa8032d49f8152d39b58ef38807b3364dfa69b40c697716bfc214b50db7"
 ALGORITHM = "HS256"
@@ -13,11 +14,11 @@ pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 
 class LoginService:
-    def __init__(self) -> None:
-        self._repository = "dummy"
+    def __init__(self, user_repository: UserRepository) -> None:
+        self._user_repository = user_repository
 
-    def authenticate_user(self, fake_db, username: str, password: str):
-        user = self._get_user(fake_db, username)
+    def authenticate_user(self, username: str, password: str):
+        user = self._user_repository.find_by_username(username)
         if not user:
             return False
         if not self._verify_password(password, user.hashed_password):
