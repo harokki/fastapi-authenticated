@@ -1,32 +1,47 @@
 from dependency_injector.wiring import Provide, inject
 from fastapi import APIRouter, Depends, HTTPException, status
-from fastapi.security import OAuth2PasswordRequestForm
+from jose import JWTError, jwt
 
-from app.api_schema import Token
+from app.api_schema import TokenData, User
 from app.containers import Container
 from app.routers import oauth2_schema
-from app.services.login_service import LoginService
+from app.services import ALGORITHM, SECRET_KEY
+from app.services.user_service import UserService
 
 router = APIRouter()
 
 
-@router.get("/")
-async def read_root(token: str = Depends(oauth2_schema)):
-    return {"token": token}
-
-
-@router.post("/token", response_model=Token)
 @inject
-async def login(
-    form_data: OAuth2PasswordRequestForm = Depends(),
-    login_service: LoginService = Depends(Provide[Container.login_service]),
-):
-    user = login_service.authenticate_user(form_data.username, form_data.password)
-    if not user:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Incorrect username or password",
-            headers={"WWW-Authenticate": "Bearer"},
-        )
-    access_token = login_service.create_access_token(data={"sub": user.username})
-    return {"access_token": access_token, "token_type": "bearer"}
+async def get_current_user(
+    token: str = Depends(oauth2_schema),
+    user_service: UserService = Depends(Provide[Container.user_service]),
+) -> User:
+    credentials_exception = HTTPException(
+        status_code=status.HTTP_401_UNAUTHORIZED,
+        detail="Could not validate credentials",
+        headers={"WWW-Authenticate": "Bearer"},
+    )
+    try:
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        username = payload.get("sub")
+        if username is None:
+            raise credentials_exception
+        token_data = TokenData(username=username)
+    except JWTError:
+        raise credentials_exception
+    user = user_service.get_user(token_data.username if token_data.username else "")
+    if user is None:
+        raise credentials_exception
+    return user
+
+
+async def get_current_active_user(current_user: User = Depends(get_current_user)):
+    if current_user.disabled:
+        raise HTTPException(status_code=400, detail="Inactive user")
+    return current_user
+
+
+@router.get("/users/me")
+@inject
+async def read_users_me(current_user: User = Depends(get_current_active_user)):
+    return current_user

@@ -3,11 +3,10 @@ from datetime import datetime, timedelta
 from jose import jwt
 from passlib.context import CryptContext
 
-from app.api_schema import UserInDB
 from app.domains.repositories.user_repository import UserRepository
 
-SECRET_KEY = "a5dc7fa8032d49f8152d39b58ef38807b3364dfa69b40c697716bfc214b50db7"
-ALGORITHM = "HS256"
+from . import ALGORITHM, SECRET_KEY
+
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
@@ -35,12 +34,6 @@ class LoginService:
         to_encode.update({"exp": expire})
         encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
         return encoded_jwt
-
-    # TODO: infrastructuresに移動
-    def _get_user(self, db, username: str):
-        if username in db:
-            user_dict = db[username]
-            return UserInDB(**user_dict)
 
     def _verify_password(self, plain_password: str, hashed_password: str):
         return pwd_context.verify(plain_password, hashed_password)
