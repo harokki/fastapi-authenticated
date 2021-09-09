@@ -15,6 +15,8 @@ python-jose = {extras = ["cryptography"], version = "^3.3.0"}
 passlib = {extras = ["bcrypt"], version = "^1.7.4"}
 python-multipart = "^0.0.5"
 dependency-injector = "^4.36.0"
+alembic = "^1.7.1"
+SQLAlchemy = "^1.4.23"
 
 [tool.poetry.dev-dependencies]
 mypy = "^0.910"
