@@ -1,14 +1,13 @@
 from dependency_injector.wiring import Provide, inject
 from fastapi import APIRouter, Depends, HTTPException, status
-from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
+from fastapi.security import OAuth2PasswordRequestForm
 
 from app.api_schema import Token
 from app.containers import Container
+from app.routers import oauth2_schema
 from app.services.login_service import LoginService
 
 router = APIRouter()
-
-oauth2_schema = OAuth2PasswordBearer(tokenUrl="token")
 
 
 @router.get("/")

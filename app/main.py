@@ -1,16 +1,16 @@
 from fastapi import FastAPI
 
-from . import endpoints
 from .containers import Container
+from .routers import users
 
 
 def create_app() -> FastAPI:
     container = Container()
-    container.wire(modules=[endpoints])
+    container.wire(modules=[users])
 
     app = FastAPI()
     app.container = container  # type: ignore
-    app.include_router(endpoints.router)
+    app.include_router(users.router)
     return app
 
 
