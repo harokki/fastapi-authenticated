@@ -3,10 +3,10 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from jose import JWTError, jwt
 
 from app.api_schema import TokenData, User
+from app.applications import ALGORITHM, SECRET_KEY
+from app.applications.user_service import UserService
 from app.containers import Container
 from app.routers import oauth2_schema
-from app.services import ALGORITHM, SECRET_KEY
-from app.services.user_service import UserService
 
 router = APIRouter()
 

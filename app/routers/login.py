@@ -3,9 +3,9 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordRequestForm
 
 from app.api_schema import Token
+from app.applications.login_service import LoginService
 from app.containers import Container
 from app.routers import oauth2_schema
-from app.services.login_service import LoginService
 
 router = APIRouter()
 

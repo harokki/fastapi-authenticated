@@ -1,8 +1,8 @@
 from dependency_injector import containers, providers
 
+from app.applications.login_service import LoginService
+from app.applications.user_service import UserService
 from app.infrastructures.repositories.user_repository import SAUserRepository
-from app.services.login_service import LoginService
-from app.services.user_service import UserService
 
 
 class Container(containers.DeclarativeContainer):
