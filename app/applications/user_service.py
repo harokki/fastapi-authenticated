@@ -1,4 +1,4 @@
-from app.api_schema import User
+from app.domains.entities.user import User
 from app.domains.repositories.user_repository import UserRepository
 
 

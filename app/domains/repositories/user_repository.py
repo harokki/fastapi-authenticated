@@ -1,10 +1,9 @@
 from abc import ABCMeta, abstractmethod
-from typing import Union
 
-from app.api_schema import UserInDB
+from app.domains.entities.user import User
 
 
 class UserRepository(metaclass=ABCMeta):
     @abstractmethod
-    def find_by_username(self, username: str) -> Union[UserInDB, None]:
+    def find_by_username(self, username: str) -> User:
         raise NotImplementedError

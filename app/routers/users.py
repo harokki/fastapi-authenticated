@@ -2,10 +2,11 @@ from dependency_injector.wiring import Provide, inject
 from fastapi import APIRouter, Depends, HTTPException, status
 from jose import JWTError, jwt
 
-from app.api_schema import TokenData, User
+from app.api_schema import TokenData, UserSchema
 from app.applications import ALGORITHM, SECRET_KEY
 from app.applications.user_service import UserService
 from app.containers import Container
+from app.domains.entities.user import User
 from app.routers import oauth2_schema
 
 router = APIRouter()
@@ -36,12 +37,12 @@ async def get_current_user(
 
 
 async def get_current_active_user(current_user: User = Depends(get_current_user)):
-    if current_user.disabled:
+    if not current_user.is_active:
         raise HTTPException(status_code=400, detail="Inactive user")
     return current_user
 
 
-@router.get("/users/me")
+@router.get("/users/me", response_model=UserSchema)
 @inject
 async def read_users_me(current_user: User = Depends(get_current_active_user)):
     return current_user
