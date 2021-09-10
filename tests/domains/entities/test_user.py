@@ -19,3 +19,23 @@ def test_initialize_user():
     assert user.created_at
     assert user.updated_by == "john"
     assert user.updated_at
+
+
+def test_get_hashed_password():
+    hashed = User.get_hashed_password("plain")
+
+    assert type(hashed) is str
+
+
+def test_verify_password():
+    hashed = User.get_hashed_password("plain")
+
+    user = User(
+        username="john",
+        email="john@example.com",
+        account_name="ジョン",
+        hashed_password=hashed,
+        created_by="john",
+    )
+
+    assert user.verify_password("plain") is True

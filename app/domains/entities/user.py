@@ -1,8 +1,11 @@
 from datetime import datetime, timezone
 
+from passlib.context import CryptContext
 from sqlalchemy import TIMESTAMP, Boolean, Column, String
 
 from app.database import Base
+
+pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 
 class User(Base):
@@ -35,3 +38,10 @@ class User(Base):
         self.created_by = created_by
         self.updated_at = self.created_at
         self.updated_by = created_by
+
+    def verify_password(self, plain_password: str):
+        return pwd_context.verify(plain_password, self.hashed_password)
+
+    @staticmethod
+    def get_hashed_password(plain_password: str) -> str:
+        return pwd_context.hash(plain_password)
