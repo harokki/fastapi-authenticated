@@ -3,7 +3,7 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordRequestForm
 
 from app.api_schema import Token
-from app.applications.login_service import LoginService
+from app.applications.login_service import LoginApplicationService
 from app.containers import Container
 from app.routers import oauth2_schema
 
@@ -19,7 +19,7 @@ async def read_root(token: str = Depends(oauth2_schema)):
 @inject
 async def login(
     form_data: OAuth2PasswordRequestForm = Depends(),
-    login_service: LoginService = Depends(Provide[Container.login_service]),
+    login_service: LoginApplicationService = Depends(Provide[Container.login_service]),
 ):
     user = login_service.authenticate_user(form_data.username, form_data.password)
     if not user:

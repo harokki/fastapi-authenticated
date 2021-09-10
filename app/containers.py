@@ -1,7 +1,7 @@
 from dependency_injector import containers, providers
 
-from app.applications.login_service import LoginService
-from app.applications.user_service import UserService
+from app.applications.login_service import LoginApplicationService
+from app.applications.user_service import UserApplicationService
 from app.database import Database
 from app.infrastructures.repositories.user_repository import SAUserRepository
 
@@ -17,5 +17,9 @@ class Container(containers.DeclarativeContainer):
         SAUserRepository, session_factory=db.provided.session
     )
 
-    login_service = providers.Factory(LoginService, user_repository=user_repository)
-    user_service = providers.Factory(UserService, user_repository=user_repository)
+    login_service = providers.Factory(
+        LoginApplicationService, user_repository=user_repository
+    )
+    user_service = providers.Factory(
+        UserApplicationService, user_repository=user_repository
+    )

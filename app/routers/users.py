@@ -4,7 +4,7 @@ from jose import JWTError, jwt
 
 from app.api_schema import TokenData, UserSchema
 from app.applications import ALGORITHM, SECRET_KEY
-from app.applications.user_service import UserService
+from app.applications.user_service import UserApplicationService
 from app.containers import Container
 from app.domains.entities.user import User
 from app.routers import oauth2_schema
@@ -15,7 +15,7 @@ router = APIRouter()
 @inject
 async def get_current_user(
     token: str = Depends(oauth2_schema),
-    user_service: UserService = Depends(Provide[Container.user_service]),
+    user_service: UserApplicationService = Depends(Provide[Container.user_service]),
 ) -> User:
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,

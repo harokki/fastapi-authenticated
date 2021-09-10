@@ -2,7 +2,7 @@ from app.domains.entities.user import User
 from app.domains.repositories.user_repository import UserRepository
 
 
-class UserService:
+class UserApplicationService:
     def __init__(self, user_repository: UserRepository) -> None:
         self._user_repository = user_repository
 

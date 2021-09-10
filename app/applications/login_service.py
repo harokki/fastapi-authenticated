@@ -10,7 +10,7 @@ from . import ALGORITHM, SECRET_KEY
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
 
 
-class LoginService:
+class LoginApplicationService:
     def __init__(self, user_repository: UserRepository) -> None:
         self._user_repository = user_repository
 
