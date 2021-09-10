@@ -39,7 +39,14 @@ class User(Base):
         self.updated_at = self.created_at
         self.updated_by = created_by
 
-    def verify_password(self, plain_password: str):
+    def __repr__(self) -> str:
+        return (
+            f"{self.__class__.__name__}("
+            f"{self.username!r}, {self.email!r}, "
+            f"{self.account_name!r}, {self.is_active!r})"
+        )
+
+    def verify_password(self, plain_password: str) -> bool:
         return pwd_context.verify(plain_password, self.hashed_password)
 
     @staticmethod

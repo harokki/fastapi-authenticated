@@ -20,6 +20,8 @@ def test_initialize_user():
     assert user.updated_by == "john"
     assert user.updated_at
 
+    assert repr(user) == "User('john', 'john@example.com', 'ジョン', True)"
+
 
 def test_get_hashed_password():
     hashed = User.get_hashed_password("plain")
