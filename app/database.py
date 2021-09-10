@@ -17,6 +17,10 @@ class Database:
             orm.sessionmaker(autocommit=False, autoflush=False, bind=self._engine)
         )
 
+    # NOTE: テスト環境構築時のみ使う(本番はalembic)
+    def create_database(self) -> None:
+        Base.metadata.create_all(self._engine)
+
     @contextmanager
     def session(self):
         session: Session = self._session_factory()
