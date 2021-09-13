@@ -1,4 +1,7 @@
+import pytest
+
 from app.domains.entities.user import User
+from app.domains.exceptions import ValidationError
 
 
 def test_initialize_user():
@@ -41,3 +44,26 @@ def test_verify_password():
     )
 
     assert user.verify_password("plain") is True
+
+
+@pytest.mark.parametrize(
+    "username,message",
+    [
+        ("あいう", "only alphanumeric, underscore and hyphen is ok"),
+        ("", "must be 1 or more and 32 or less"),
+        ("t" * 33, "must be 1 or more and 32 or less"),
+    ],
+)
+def test_validate_username(username, message):
+    with pytest.raises(ValidationError) as ex_info:
+        User(
+            username=username,
+            email="a@example.com",
+            account_name="a",
+            hashed_password="a",
+            created_by="a",
+        )
+
+    assert ex_info.value.expression == username
+    assert ex_info.value.code == "VALIDATION_ERROR"
+    assert ex_info.value.message == message

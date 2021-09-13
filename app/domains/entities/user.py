@@ -1,9 +1,12 @@
+import re
 from datetime import datetime, timezone
 
 from passlib.context import CryptContext
 from sqlalchemy import TIMESTAMP, Boolean, Column, String
+from sqlalchemy.orm import validates
 
 from app.database import Base
+from app.domains.exceptions import ValidationError
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
@@ -52,3 +55,13 @@ class User(Base):
     @staticmethod
     def get_hashed_password(plain_password: str) -> str:
         return pwd_context.hash(plain_password)
+
+    @validates("username")
+    def validate_username(self, key, value):
+        if re.compile("[a-zA-Z0-9-_]*").fullmatch(value) is None:
+            raise ValidationError(
+                value, "only alphanumeric, underscore and hyphen is ok"
+            )
+        if not 1 <= len(value) <= 32:
+            raise ValidationError(value, "must be 1 or more and 32 or less")
+        return value
