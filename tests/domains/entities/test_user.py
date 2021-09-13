@@ -67,3 +67,92 @@ def test_validate_username(username, message):
     assert ex_info.value.expression == username
     assert ex_info.value.code == "VALIDATION_ERROR"
     assert ex_info.value.message == message
+
+
+@pytest.mark.parametrize(
+    "email,message",
+    [
+        ("john'semail", "illegal email format"),
+        ("", "illegal email format"),
+        ("t" * 245 + "@example.com", "must be 1 or more and 256 or less"),
+    ],
+)
+def test_validate_email(email, message):
+    with pytest.raises(ValidationError) as ex_info:
+        User(
+            username="john",
+            email=email,
+            account_name="a",
+            hashed_password="a",
+            created_by="a",
+        )
+
+    assert ex_info.value.expression == email
+    assert ex_info.value.code == "VALIDATION_ERROR"
+    assert ex_info.value.message == message
+
+
+@pytest.mark.parametrize(
+    "account_name,message",
+    [
+        ("", "must be 1 or more and 32 or less"),
+        ("t" * 33, "must be 1 or more and 32 or less"),
+    ],
+)
+def test_validate_account_name(account_name, message):
+    with pytest.raises(ValidationError) as ex_info:
+        User(
+            username="john",
+            email="john@example.com",
+            account_name=account_name,
+            hashed_password="a",
+            created_by="a",
+        )
+
+    assert ex_info.value.expression == account_name
+    assert ex_info.value.code == "VALIDATION_ERROR"
+    assert ex_info.value.message == message
+
+
+@pytest.mark.parametrize(
+    "hashed_password,message",
+    [
+        ("", "must be 1 or more and 64 or less"),
+        ("t" * 65, "must be 1 or more and 64 or less"),
+    ],
+)
+def test_validate_hashed_password(hashed_password, message):
+    with pytest.raises(ValidationError) as ex_info:
+        User(
+            username="john",
+            email="john@example.com",
+            account_name="ジョン",
+            hashed_password=hashed_password,
+            created_by="a",
+        )
+
+    assert ex_info.value.expression == hashed_password
+    assert ex_info.value.code == "VALIDATION_ERROR"
+    assert ex_info.value.message == message
+
+
+@pytest.mark.parametrize(
+    "created_by,message",
+    [
+        ("", "must be 1 or more and 32 or less"),
+        ("t" * 33, "must be 1 or more and 32 or less"),
+    ],
+)
+def test_validate_created_by(created_by, message):
+    with pytest.raises(ValidationError) as ex_info:
+        User(
+            username="john",
+            email="john@example.com",
+            account_name="ジョン",
+            hashed_password="a",
+            created_by=created_by,
+        )
+
+    assert ex_info.value.expression == created_by
+    assert ex_info.value.code == "VALIDATION_ERROR"
+    assert ex_info.value.message == message
