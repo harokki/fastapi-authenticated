@@ -3,6 +3,7 @@ from datetime import datetime, timedelta
 from jose import jwt
 
 from app.domains.entities.user import User
+from app.domains.exceptions import NotFoundError
 from app.domains.repositories.user_repository import UserRepository
 
 from . import ALGORITHM, SECRET_KEY
@@ -17,9 +18,9 @@ class LoginApplicationService:
     def authenticate_user(self, username: str, password: str) -> User:
         user = self._user_repository.find_by_username(username)
         if not user:
-            return False
+            raise NotFoundError("user not found")
         if not user.verify_password(password):
-            return False
+            raise NotFoundError("user not found")
         return user
 
     def create_access_token(self, data: dict) -> str:
