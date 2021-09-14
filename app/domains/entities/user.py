@@ -7,6 +7,7 @@ from sqlalchemy.orm import validates
 
 from app.database import Base
 from app.domains.exceptions import ValidationError
+from app.domains.validations import check_length
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
@@ -56,19 +57,13 @@ class User(Base):
     def get_hashed_password(plain_password: str) -> str:
         return pwd_context.hash(plain_password)
 
-    # TODO: いろんなところで使うと思うので別ファイルに切り出す
-    def _check_length(self, value: str, lower: int, upper: int) -> str:
-        if not lower <= len(value) <= upper:
-            raise ValidationError(value, f"must be {lower} or more and {upper} or less")
-        return value
-
     @validates("username")
     def validate_username(self, _, value):
         if re.compile("[a-zA-Z0-9-_]*").fullmatch(value) is None:
             raise ValidationError(
                 value, "only alphanumeric, underscore and hyphen is ok"
             )
-        self._check_length(value, 1, 32)
+        check_length(value, 1, 32)
         return value
 
     @validates("email")
@@ -78,20 +73,20 @@ class User(Base):
             is None
         ):
             raise ValidationError(value, "illegal email format")
-        self._check_length(value, 1, 256)
+        check_length(value, 1, 256)
         return value
 
     @validates("account_name")
     def validate_account_name(self, _, value):
-        self._check_length(value, 1, 32)
+        check_length(value, 1, 32)
         return value
 
     @validates("hashed_password")
     def validate_hashed_password(self, _, value):
-        self._check_length(value, 1, 64)
+        check_length(value, 1, 64)
         return value
 
     @validates("created_by")
     def validate_created_by(self, _, value):
-        self._check_length(value, 1, 32)
+        check_length(value, 1, 32)
         return value
