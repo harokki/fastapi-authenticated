@@ -1,17 +1,27 @@
 from dependency_injector.wiring import Provide, inject
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, Security, status
 from fastapi.security import OAuth2PasswordRequestForm
 
 from app.api_schema import Token
 from app.applications.login_service import LoginApplicationService
 from app.containers import Container
+from app.domains.constants.role import Role
+from app.domains.entities.user import User
 from app.routers import oauth2_schema
+
+from .users import get_current_active_user
 
 router = APIRouter()
 
 
 @router.get("/")
-async def read_root(token: str = Depends(oauth2_schema)):
+async def read_root(
+    token: str = Depends(oauth2_schema),
+    current_user: User = Security(
+        get_current_active_user,
+        scopes=[Role.Admin["name"]],
+    ),
+):
     return {"token": token}
 
 
@@ -28,5 +38,12 @@ async def login(
             detail="Incorrect username or password",
             headers={"WWW-Authenticate": "Bearer"},
         )
-    access_token = login_service.create_access_token(data={"sub": user.username})
+    role_names = []
+    for user_role in user.user_role:
+        role_names.append(user_role.role.name)
+    if not role_names:
+        role_names.append("Guest")
+    access_token = login_service.create_access_token(
+        data={"sub": user.username, "scopes": role_names}
+    )
     return {"access_token": access_token, "token_type": "bearer"}
