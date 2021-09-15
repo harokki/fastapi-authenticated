@@ -2,12 +2,12 @@ from dependency_injector.wiring import Provide, inject
 from fastapi import APIRouter, Depends, HTTPException, Security, status
 from fastapi.security import OAuth2PasswordRequestForm
 
-from app.api_schema import Token
 from app.applications.login_service import LoginApplicationService
 from app.containers import Container
 from app.domains.constants.role import Role
 from app.domains.entities.user import User
 from app.routers import oauth2_schema
+from app.schemas.token import Token
 
 from .users import get_current_active_user
 
