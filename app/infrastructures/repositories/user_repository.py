@@ -5,6 +5,7 @@ from sqlalchemy.orm import Session
 
 from app.domains.entities.user import User
 from app.domains.repositories.user_repository import UserRepository
+from app.schemas.user import UserCreateSchema
 
 
 class SAUserRepository(UserRepository):
@@ -15,3 +16,20 @@ class SAUserRepository(UserRepository):
         with self.session_factory() as session:
             user = session.query(User).filter(User.username == username).first()
             return user
+
+    def create_user(self, user: UserCreateSchema) -> User:
+        hashed_password = User.get_hashed_password(user.password)
+        db_user = User(
+            user.username,
+            user.email,
+            user.account_name,
+            hashed_password,
+            user.created_by,
+        )
+
+        with self.session_factory() as session:
+            session.add(db_user)
+            session.commit()
+            session.refresh(db_user)
+
+        return db_user

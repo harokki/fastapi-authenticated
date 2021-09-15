@@ -11,7 +11,7 @@ class UserBaseSchema(BaseModel):
 
 
 class UserCreateSchema(UserBaseSchema):
-    hashed_password: str
+    password: str
     created_by: str
 
 
@@ -23,3 +23,8 @@ class UserSchema(UserBaseSchema):
 
     class Config:
         orm_mode = True
+
+
+class UserRoleSchema(BaseModel):
+    username: str
+    role_id: str
