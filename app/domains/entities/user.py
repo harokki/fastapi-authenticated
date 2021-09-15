@@ -1,5 +1,6 @@
 import re
 from datetime import datetime, timezone
+from typing import List
 
 from passlib.context import CryptContext
 from sqlalchemy import TIMESTAMP, Boolean, Column, String
@@ -62,6 +63,12 @@ class User(Base):
     @staticmethod
     def get_hashed_password(plain_password: str) -> str:
         return pwd_context.hash(plain_password)
+
+    def get_role_names(self) -> List[str]:
+        role_names = []
+        for user_role in self.user_role:
+            role_names.append(user_role.role.name)
+        return role_names
 
     @validates("username")
     def validate_username(self, _, value):

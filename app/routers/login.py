@@ -38,9 +38,7 @@ async def login(
             detail="Incorrect username or password",
             headers={"WWW-Authenticate": "Bearer"},
         )
-    role_names = []
-    for user_role in user.user_role:
-        role_names.append(user_role.role.name)
+    role_names = user.get_role_names()
     if not role_names:
         role_names.append("Guest")
     access_token = login_service.create_access_token(

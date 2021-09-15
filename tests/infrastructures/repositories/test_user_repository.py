@@ -101,9 +101,6 @@ def test_get_user_role(
         session.refresh(user_role)
         session.refresh(user_role_2)
         got_user = user_repository.find_by_username("john")
-        role_names = []
-        for user_role in got_user.user_role:
-            role_names.append(user_role.role.name)
 
     assert len(got_user.user_role) == 2
-    assert sorted(role_names) == sorted(["Admin", "Super Admin"])
+    assert sorted(got_user.get_role_names()) == sorted(["Admin", "Super Admin"])

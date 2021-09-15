@@ -46,6 +46,20 @@ def test_verify_password():
     assert user.verify_password("plain") is True
 
 
+def test_get_role_names():
+    hashed = User.get_hashed_password("plain")
+
+    user = User(
+        username="john",
+        email="john@example.com",
+        account_name="ジョン",
+        hashed_password=hashed,
+        created_by="john",
+    )
+
+    assert user.get_role_names() == []
+
+
 @pytest.mark.parametrize(
     "username,message",
     [
