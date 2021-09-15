@@ -19,7 +19,9 @@ router = APIRouter()
 async def get_current_user(
     security_scopes: SecurityScopes,
     token: str = Depends(oauth2_schema),
-    user_service: UserApplicationService = Depends(Provide[Container.user_service]),
+    user_service: UserApplicationService = Depends(
+        Provide[Container.user_application_service]
+    ),
 ) -> User:
     if security_scopes.scopes:
         authenticate_value = f"Bearer scope={security_scopes.scope_str}"

@@ -29,7 +29,9 @@ async def read_root(
 @inject
 async def login(
     form_data: OAuth2PasswordRequestForm = Depends(),
-    login_service: LoginApplicationService = Depends(Provide[Container.login_service]),
+    login_service: LoginApplicationService = Depends(
+        Provide[Container.login_application_service]
+    ),
 ):
     user = login_service.authenticate_user(form_data.username, form_data.password)
     if not user:
