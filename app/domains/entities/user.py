@@ -3,7 +3,7 @@ from datetime import datetime, timezone
 
 from passlib.context import CryptContext
 from sqlalchemy import TIMESTAMP, Boolean, Column, String
-from sqlalchemy.orm import validates
+from sqlalchemy.orm import relationship, validates
 
 from app.database import Base
 from app.domains.exceptions import ValidationError
@@ -20,10 +20,16 @@ class User(Base):
     account_name = Column(String(32), index=True, nullable=False)
     hashed_password = Column(String(64), nullable=False)
     is_active = Column(Boolean, default=True, nullable=False)
-    created_at = Column(TIMESTAMP(timezone=True), default=datetime.now, nullable=False)
+    created_at = Column(
+        TIMESTAMP(timezone=True), default=datetime.now(timezone.utc), nullable=False
+    )
     created_by = Column(String(32), nullable=False)
-    updated_at = Column(TIMESTAMP(timezone=True), default=datetime.now, nullable=False)
+    updated_at = Column(
+        TIMESTAMP(timezone=True), default=datetime.now(timezone.utc), nullable=False
+    )
     updated_by = Column(String(32), nullable=False)
+
+    user_role = relationship("UserRole", lazy="subquery", back_populates="user")
 
     def __init__(
         self,

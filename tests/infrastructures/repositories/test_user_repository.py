@@ -6,7 +6,9 @@ from dependency_injector import containers, providers
 from sqlalchemy.orm import Session
 
 from app.database import Database
+from app.domains.entities.role import Role
 from app.domains.entities.user import User
+from app.domains.entities.user_role import UserRole
 from app.infrastructures.repositories.user_repository import SAUserRepository
 
 SQLALCEMY_DATABASE_URL = "sqlite:///./test.db"
@@ -30,6 +32,8 @@ def db() -> Tuple[SAUserRepository, Callable[..., AbstractContextManager[Session
 
     with session_factory() as session:
         session.query(User).delete()
+        session.query(Role).delete()
+        session.query(UserRole).delete()
         session.commit()
 
     return user_repository, session_factory
@@ -63,3 +67,43 @@ def test_find_by_user_id(
     assert got_user.created_at
     assert got_user.updated_by == "john"
     assert got_user.updated_at
+
+
+def test_get_user_role(
+    db: Tuple[SAUserRepository, Callable[..., AbstractContextManager[Session]]]
+):
+    user_repository, session_factory = db
+
+    user = User(
+        username="john",
+        email="john@example.com",
+        account_name="ジョン",
+        hashed_password="aaaaa",
+        created_by="john",
+    )
+
+    role = Role("Admin", "")
+    super_role = Role("Super Admin", "")
+
+    user_role = UserRole(user.username, role.id)
+    user_role_2 = UserRole(user.username, super_role.id)
+
+    with session_factory() as session:
+        session.add(user)
+        session.add(role)
+        session.add(super_role)
+        session.add(user_role)
+        session.add(user_role_2)
+        session.commit()
+        session.refresh(user)
+        session.refresh(role)
+        session.refresh(super_role)
+        session.refresh(user_role)
+        session.refresh(user_role_2)
+        got_user = user_repository.find_by_username("john")
+        role_names = []
+        for user_role in got_user.user_role:
+            role_names.append(user_role.role.name)
+
+    assert len(got_user.user_role) == 2
+    assert sorted(role_names) == sorted(["Admin", "Super Admin"])
