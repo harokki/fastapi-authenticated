@@ -1,5 +1,5 @@
 from contextlib import AbstractContextManager
-from typing import Callable, Generator, Tuple
+from typing import Callable, Dict, Generator, Tuple
 
 import pytest
 from dependency_injector import containers, providers
@@ -13,6 +13,7 @@ from app.domains.entities.user_role import UserRole
 from app.infrastructures.repositories.user_repository import SAUserRepository
 from app.infrastructures.repositories.user_role_repository import SAUserRoleRepository
 from app.main import app
+from tests.utils.user import get_admin_token_headers
 
 SQLALCEMY_TEST_DATABASE_URL = "sqlite:///./test.db"
 
@@ -70,9 +71,9 @@ def client() -> Generator:
 
 
 @pytest.fixture(scope="module")
-def create_root_user() -> None:
+def create_root_and_guest_user() -> None:
     """
-    APIのテスト用。Adminロールのユーザを作成する。
+    APIのテスト用。AdminとGuestロールのユーザを作成する。
     """
     container = Container()
     db = container.db_provider()
@@ -82,17 +83,31 @@ def create_root_user() -> None:
     user = User(
         "john", "john@example.com", "ジョン", User.get_hashed_password("plain"), "system"
     )
-    role = Role("Admin", "")
-    user_role = UserRole(user.username, role.id)
+    admin_role = Role("Admin", "")
+    guest_role = Role("Admin", "")
+    user_role = UserRole(user.username, admin_role.id)
+
+    guest_user = User(
+        "emma", "emma@example.com", "エマ", User.get_hashed_password("dummy"), "system"
+    )
 
     with session_factory() as session:
         session.query(User).delete()
         session.query(Role).delete()
         session.query(UserRole).delete()
         session.add(user)
-        session.add(role)
+        session.add(guest_user)
+        session.add(admin_role)
+        session.add(guest_role)
         session.add(user_role)
         session.commit()
         session.refresh(user)
-        session.refresh(role)
+        session.refresh(guest_user)
+        session.refresh(admin_role)
+        session.refresh(guest_role)
         session.refresh(user_role)
+
+
+@pytest.fixture(scope="module")
+def admin_token_headers(client: TestClient) -> Dict[str, str]:
+    return get_admin_token_headers(client=client)

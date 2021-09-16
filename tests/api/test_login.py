@@ -1,7 +1,7 @@
 from fastapi.testclient import TestClient
 
 
-def test_get_access_token(client: TestClient, create_root_user):
+def test_get_access_token(client: TestClient, create_root_and_guest_user):
     login_data = {"username": "john", "password": "plain"}
 
     r = client.post("/token", data=login_data)

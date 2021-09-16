@@ -7,6 +7,7 @@ class UserBaseSchema(BaseModel):
     username: str
     email: str
     account_name: str
+    # TODO: Createには不要
     is_active: bool
 
 
