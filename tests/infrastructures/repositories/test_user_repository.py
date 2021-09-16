@@ -36,6 +36,35 @@ def test_find_by_user_id(db: DbFixtureType):
     assert got_user.updated_at
 
 
+def test_find_by_email(db: DbFixtureType):
+    repositories, session_factory = db
+    user_repository = repositories.user_repository
+
+    user = User(
+        username="john",
+        email="john@example.com",
+        account_name="ジョン",
+        hashed_password="aaaaa",
+        created_by="john",
+    )
+
+    with session_factory() as session:
+        session.add(user)
+        session.commit()
+        session.refresh(user)
+    got_user = user_repository.find_by_email("john@example.com")
+
+    assert got_user.username == "john"
+    assert got_user.email == "john@example.com"
+    assert got_user.account_name == "ジョン"
+    assert got_user.is_active is True
+    assert got_user.hashed_password == "aaaaa"
+    assert got_user.created_by == "john"
+    assert got_user.created_at
+    assert got_user.updated_by == "john"
+    assert got_user.updated_at
+
+
 def test_get_user_role(db: DbFixtureType):
     repositories, session_factory = db
     user_repository = repositories.user_repository

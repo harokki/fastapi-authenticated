@@ -10,8 +10,11 @@ class UserBaseSchema(BaseModel):
     is_active: bool
 
 
-class UserCreateSchema(UserBaseSchema):
+class UserAPICreateSchema(UserBaseSchema):
     password: str
+
+
+class UserCreateSchema(UserAPICreateSchema):
     created_by: str
 
 

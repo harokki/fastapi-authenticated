@@ -17,6 +17,11 @@ class SAUserRepository(UserRepository):
             user = session.query(User).filter(User.username == username).first()
             return user
 
+    def find_by_email(self, email: str) -> User:
+        with self.session_factory() as session:
+            user = session.query(User).filter(User.email == email).first()
+            return user
+
     def create_user(self, user: UserCreateSchema) -> User:
         hashed_password = User.get_hashed_password(user.password)
         db_user = User(

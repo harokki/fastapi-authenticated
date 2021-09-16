@@ -28,5 +28,7 @@ class Container(containers.DeclarativeContainer):
         LoginApplicationService, user_repository=user_repository
     )
     user_application_service = providers.Factory(
-        UserApplicationService, user_repository=user_repository
+        UserApplicationService,
+        user_repository=user_repository,
+        user_service=user_service,
     )

@@ -17,7 +17,7 @@ router = APIRouter()
 @router.get("/")
 async def read_root(
     token: str = Depends(oauth2_schema),
-    current_user: User = Security(
+    _: User = Security(
         get_current_active_user,
         scopes=[Role.Admin["name"]],
     ),

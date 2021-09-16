@@ -10,5 +10,9 @@ class UserRepository(metaclass=ABCMeta):
         raise NotImplementedError
 
     @abstractmethod
+    def find_by_email(self, email: str) -> User:
+        raise NotImplementedError
+
+    @abstractmethod
     def create_user(self, user: UserCreateSchema) -> User:
         raise NotImplementedError
