@@ -31,6 +31,7 @@ async def create_user(
     ),
 ):
     user_dict = user.dict()
+    user_dict["is_active"] = True
     user_dict["created_by"] = current_user.username
     user_with_created_by = UserCreateSchema(**user_dict)
     try:

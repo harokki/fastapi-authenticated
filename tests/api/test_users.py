@@ -8,7 +8,6 @@ def test_create_user_by_admin(
         "username": "anny",
         "email": "anny@example.com",
         "account_name": "アニー",
-        "is_active": True,
         "password": "plain",
     }
 
@@ -19,7 +18,7 @@ def test_create_user_by_admin(
     assert json["username"] == data["username"]
     assert json["email"] == data["email"]
     assert json["account_name"] == data["account_name"]
-    assert json["is_active"] == data["is_active"]
+    assert json["is_active"] is True
     assert json["created_at"]
     assert json["created_by"] == "john"
     assert json["updated_at"]
@@ -33,7 +32,6 @@ def test_create_exists_user_by_admin_return_422_error(
         "username": "john",
         "email": "john@example.com",
         "account_name": "ジョン",
-        "is_active": True,
         "password": "plain",
     }
 
@@ -51,7 +49,6 @@ def test_create_user_by_guest_returns_401_error(
         "username": "anny",
         "email": "anny@example.com",
         "account_name": "アニー",
-        "is_active": True,
         "password": "plain",
     }
 

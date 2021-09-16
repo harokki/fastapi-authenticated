@@ -7,8 +7,6 @@ class UserBaseSchema(BaseModel):
     username: str
     email: str
     account_name: str
-    # TODO: Createには不要
-    is_active: bool
 
 
 class UserAPICreateSchema(UserBaseSchema):
@@ -16,10 +14,12 @@ class UserAPICreateSchema(UserBaseSchema):
 
 
 class UserCreateSchema(UserAPICreateSchema):
+    is_active: bool
     created_by: str
 
 
 class UserSchema(UserBaseSchema):
+    is_active: bool
     created_at: datetime
     created_by: str
     updated_at: datetime
