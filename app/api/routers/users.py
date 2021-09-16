@@ -4,13 +4,13 @@ from fastapi.security import SecurityScopes
 from jose import JWTError, jwt
 from pydantic import ValidationError
 
+from app.api.deps import oauth2_schema
 from app.applications import ALGORITHM, SECRET_KEY
 from app.applications.user_service import UserApplicationService
 from app.containers import Container
 from app.domains.constants.role import Role
 from app.domains.entities.user import User
 from app.domains.exceptions import DuplicationError
-from app.routers import oauth2_schema
 from app.schemas.token import TokenData
 from app.schemas.user import UserAPICreateSchema, UserCreateSchema, UserSchema
 

@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 
+from .api.routers import login, users
 from .containers import Container
-from .routers import login, users
 
 
 def create_app() -> FastAPI:
