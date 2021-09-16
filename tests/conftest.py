@@ -13,7 +13,7 @@ from app.domains.entities.user_role import UserRole
 from app.infrastructures.repositories.user_repository import SAUserRepository
 from app.infrastructures.repositories.user_role_repository import SAUserRoleRepository
 from app.main import app
-from tests.utils.user import get_admin_token_headers
+from tests.utils.user import get_admin_token_headers, get_guest_token_headers
 
 SQLALCEMY_TEST_DATABASE_URL = "sqlite:///./test.db"
 
@@ -84,7 +84,7 @@ def create_root_and_guest_user() -> None:
         "john", "john@example.com", "ジョン", User.get_hashed_password("plain"), "system"
     )
     admin_role = Role("Admin", "")
-    guest_role = Role("Admin", "")
+    guest_role = Role("Guest", "")
     user_role = UserRole(user.username, admin_role.id)
 
     guest_user = User(
@@ -111,3 +111,8 @@ def create_root_and_guest_user() -> None:
 @pytest.fixture(scope="module")
 def admin_token_headers(client: TestClient) -> Dict[str, str]:
     return get_admin_token_headers(client=client)
+
+
+@pytest.fixture(scope="module")
+def guest_token_headers(client: TestClient) -> Dict[str, str]:
+    return get_guest_token_headers(client=client)
