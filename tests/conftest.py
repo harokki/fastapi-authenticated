@@ -63,7 +63,10 @@ def db() -> DbFixtureType:
 
 @pytest.fixture(scope="module")
 def client() -> Generator:
-    yield TestClient(app)
+    with app.container.db.override(  # type: ignore
+        providers.Singleton(Database, db_url=SQLALCEMY_TEST_DATABASE_URL)
+    ):
+        yield TestClient(app)
 
 
 @pytest.fixture(scope="module")
