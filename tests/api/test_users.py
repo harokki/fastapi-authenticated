@@ -25,6 +25,47 @@ def test_create_user_by_admin(
     assert json["updated_by"] == "john"
 
 
+def test_create_user_by_admin_check_request_body_type(
+    client: TestClient, create_root_and_guest_user, admin_token_headers
+):
+    data = {
+        "username": 1,
+        "email": 1,
+        "account_name": 1,
+        "password": 1,
+    }
+
+    r = client.post("/users", headers=admin_token_headers, json=data)
+
+    json = r.json()
+    expected = {
+        "detail": [
+            {
+                "loc": ["body", "username"],
+                "msg": "str type expected",
+                "type": "type_error.str",
+            },
+            {
+                "loc": ["body", "email"],
+                "msg": "str type expected",
+                "type": "type_error.str",
+            },
+            {
+                "loc": ["body", "account_name"],
+                "msg": "str type expected",
+                "type": "type_error.str",
+            },
+            {
+                "loc": ["body", "password"],
+                "msg": "str type expected",
+                "type": "type_error.str",
+            },
+        ]
+    }
+    assert r.status_code == 422
+    assert json == expected
+
+
 def test_create_exists_user_by_admin_return_422_error(
     client: TestClient, create_root_and_guest_user, admin_token_headers
 ):

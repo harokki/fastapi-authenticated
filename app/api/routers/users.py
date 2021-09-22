@@ -6,7 +6,7 @@ from app.applications.user_service import UserApplicationService
 from app.containers import Container
 from app.domains.constants.role import Role
 from app.domains.entities.user import User
-from app.domains.exceptions import DuplicationError
+from app.domains.exceptions import DuplicationError, ValidationError
 from app.schemas.user import UserAPICreateSchema, UserCreateSchema, UserSchema
 
 router = APIRouter()
@@ -40,6 +40,11 @@ async def create_user(
         raise HTTPException(
             status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
             detail="username or email already Exists",
+        )
+    except ValidationError as error:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail={"expression": error.args[0], "message": error.args[1]},
         )
     except Exception:
         raise HTTPException(

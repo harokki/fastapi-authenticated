@@ -1,16 +1,16 @@
 from datetime import datetime
 
-from pydantic import BaseModel
+from pydantic import BaseModel, StrictStr
 
 
 class UserBaseSchema(BaseModel):
-    username: str
-    email: str
-    account_name: str
+    username: StrictStr
+    email: StrictStr
+    account_name: StrictStr
 
 
 class UserAPICreateSchema(UserBaseSchema):
-    password: str
+    password: StrictStr
 
 
 class UserCreateSchema(UserAPICreateSchema):
