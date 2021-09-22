@@ -81,14 +81,14 @@ def create_root_and_guest_user() -> None:
     session_factory = db.session
 
     user = User(
-        "john", "john@example.com", "ジョン", User.get_hashed_password("plain"), "system"
+        "john", "john@example.com", "ジョン", User.get_hashed_password("plain"), "default"
     )
     admin_role = Role("Admin", "")
     guest_role = Role("Guest", "")
     user_role = UserRole(user.username, admin_role.id)
 
     guest_user = User(
-        "emma", "emma@example.com", "エマ", User.get_hashed_password("dummy"), "system"
+        "emma", "emma@example.com", "エマ", User.get_hashed_password("dummy"), "default"
     )
 
     with session_factory() as session:
@@ -109,14 +109,29 @@ def create_root_and_guest_user() -> None:
 
 
 @pytest.fixture(scope="module")
-def admin_token_headers(
-    client: TestClient, create_root_and_guest_user
-) -> Dict[str, str]:
+def admin_token_headers(client: TestClient) -> Dict[str, str]:
     return get_admin_token_headers(client=client)
 
 
 @pytest.fixture(scope="module")
-def guest_token_headers(
-    client: TestClient, create_root_and_guest_user
-) -> Dict[str, str]:
+def guest_token_headers(client: TestClient) -> Dict[str, str]:
     return get_guest_token_headers(client=client)
+
+
+@pytest.fixture
+def delete_other_than_default_user() -> Generator:
+    """
+    create_root_and_guest_userで作成したユーザ以外のユーザを作成した時に、
+    作成したユーザを最後に削除しておきたい場合に呼ぶ
+    """
+    container = Container()
+    db = container.db_provider()
+    db.create_database()
+    session_factory = db.session
+
+    # テストが終わるまでは消さない
+    yield "dummy"
+
+    with session_factory() as session:
+        session.query(User).filter(User.created_by != "default").delete()
+        session.commit()

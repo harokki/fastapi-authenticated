@@ -1,3 +1,5 @@
+from typing import List
+
 from app.domains.entities.user import User
 from app.domains.exceptions import DuplicationError
 from app.domains.repositories.user_repository import UserRepository
@@ -23,3 +25,7 @@ class UserApplicationService:
         user = self._user_repository.create_user(user)
 
         return user
+
+    def get_users(self, skip: int = 0, limit: int = 0) -> List[User]:
+        users = self._user_repository.get_users(skip=skip, limit=limit)
+        return users

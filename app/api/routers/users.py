@@ -1,3 +1,5 @@
+from typing import List
+
 from dependency_injector.wiring import Provide, inject
 from fastapi import APIRouter, Depends, HTTPException, Security, status
 
@@ -16,6 +18,19 @@ router = APIRouter()
 @inject
 async def read_users_me(current_user: User = Depends(get_current_active_user)):
     return current_user
+
+
+@router.get("/users", response_model=List[UserSchema])
+@inject
+async def get_users(
+    skip: int = 0,
+    limit: int = 100,
+    user_service: UserApplicationService = Depends(
+        Provide[Container.user_application_service]
+    ),
+):
+    users = user_service.get_users(skip=skip, limit=limit)
+    return users
 
 
 @router.post("/users", response_model=UserSchema)

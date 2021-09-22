@@ -1,7 +1,9 @@
 from fastapi.testclient import TestClient
 
 
-def test_create_user_by_admin(client: TestClient, admin_token_headers):
+def test_create_user_by_admin(
+    client: TestClient, admin_token_headers, delete_other_than_default_user
+):
     data = {
         "username": "anny",
         "email": "anny@example.com",
@@ -253,3 +255,32 @@ def test_create_user_by_guest_returns_401_error(
     json = r.json()
     assert r.status_code == 401
     assert json["detail"] == "Not enough permissions"
+
+
+def test_get_users(client: TestClient, admin_token_headers):
+    r = client.get("/users", headers=admin_token_headers)
+
+    json = r.json()
+    user1 = json[0]
+    user2 = json[1]
+
+    assert r.status_code == 200
+    assert len(json) == 2
+
+    assert user1["username"] == "john"
+    assert user1["email"] == "john@example.com"
+    assert user1["account_name"] == "ジョン"
+    assert user1["is_active"] is True
+    assert user1["created_at"]
+    assert user1["created_by"] == "default"
+    assert user1["updated_at"]
+    assert user1["updated_by"] == "default"
+
+    assert user2["username"] == "emma"
+    assert user2["email"] == "emma@example.com"
+    assert user2["account_name"] == "エマ"
+    assert user2["is_active"] is True
+    assert user2["created_at"]
+    assert user2["created_by"] == "default"
+    assert user2["updated_at"]
+    assert user2["updated_by"] == "default"
