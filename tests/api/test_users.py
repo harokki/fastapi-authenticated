@@ -1,14 +1,12 @@
 from fastapi.testclient import TestClient
 
 
-def test_create_user_by_admin(
-    client: TestClient, create_root_and_guest_user, admin_token_headers
-):
+def test_create_user_by_admin(client: TestClient, admin_token_headers):
     data = {
         "username": "anny",
         "email": "anny@example.com",
         "account_name": "アニー",
-        "password": "plain",
+        "password": "plainpassword",
     }
 
     r = client.post("/users", headers=admin_token_headers, json=data)
@@ -25,8 +23,165 @@ def test_create_user_by_admin(
     assert json["updated_by"] == "john"
 
 
+def test_creat_user_by_admin_check_required_field(
+    client: TestClient, admin_token_headers
+):
+    data = {"dummy": "dummy"}
+
+    r = client.post("/users", headers=admin_token_headers, json=data)
+
+    json = r.json()
+    expected = {
+        "detail": [
+            {
+                "loc": ["body", "username"],
+                "msg": "field required",
+                "type": "value_error.missing",
+            },
+            {
+                "loc": ["body", "email"],
+                "msg": "field required",
+                "type": "value_error.missing",
+            },
+            {
+                "loc": ["body", "account_name"],
+                "msg": "field required",
+                "type": "value_error.missing",
+            },
+            {
+                "loc": ["body", "password"],
+                "msg": "field required",
+                "type": "value_error.missing",
+            },
+        ]
+    }
+
+    assert r.status_code == 422
+    assert json == expected
+
+
+def test_creat_user_by_admin_check_min_length(client: TestClient, admin_token_headers):
+    data = {
+        "username": "",
+        "email": "",
+        "account_name": "",
+        "password": "",
+    }
+
+    r = client.post("/users", headers=admin_token_headers, json=data)
+
+    json = r.json()
+    expected = {
+        "detail": [
+            {
+                "loc": ["body", "username"],
+                "msg": "ensure this value has at least 1 characters",
+                "type": "value_error.any_str.min_length",
+                "ctx": {"limit_value": 1},
+            },
+            {
+                "loc": ["body", "email"],
+                "msg": "ensure this value has at least 1 characters",
+                "type": "value_error.any_str.min_length",
+                "ctx": {"limit_value": 1},
+            },
+            {
+                "loc": ["body", "account_name"],
+                "msg": "ensure this value has at least 1 characters",
+                "type": "value_error.any_str.min_length",
+                "ctx": {"limit_value": 1},
+            },
+            {
+                "loc": ["body", "password"],
+                "msg": "ensure this value has at least 8 characters",
+                "type": "value_error.any_str.min_length",
+                "ctx": {"limit_value": 8},
+            },
+        ]
+    }
+
+    assert r.status_code == 422
+    assert json == expected
+
+
+def test_creat_user_by_admin_check_max_length(client: TestClient, admin_token_headers):
+    data = {
+        "username": "a" * 33,
+        "email": "a" * 257,
+        "account_name": "a" * 33,
+        "password": "a" * 65,
+    }
+
+    r = client.post("/users", headers=admin_token_headers, json=data)
+
+    json = r.json()
+    expected = {
+        "detail": [
+            {
+                "loc": ["body", "username"],
+                "msg": "ensure this value has at most 32 characters",
+                "type": "value_error.any_str.max_length",
+                "ctx": {"limit_value": 32},
+            },
+            {
+                "loc": ["body", "email"],
+                "msg": "ensure this value has at most 256 characters",
+                "type": "value_error.any_str.max_length",
+                "ctx": {"limit_value": 256},
+            },
+            {
+                "loc": ["body", "account_name"],
+                "msg": "ensure this value has at most 32 characters",
+                "type": "value_error.any_str.max_length",
+                "ctx": {"limit_value": 32},
+            },
+            {
+                "loc": ["body", "password"],
+                "msg": "ensure this value has at most 64 characters",
+                "type": "value_error.any_str.max_length",
+                "ctx": {"limit_value": 64},
+            },
+        ]
+    }
+
+    assert r.status_code == 422
+    assert json == expected
+
+
+def test_creat_user_by_admin_check_invalid_username_email(
+    client: TestClient, admin_token_headers
+):
+    data = {
+        "username": "john$",
+        "email": "johnemail",
+        "account_name": "ジョン",
+        "password": "plainplain",
+    }
+
+    r = client.post("/users", headers=admin_token_headers, json=data)
+
+    json = r.json()
+    expected = {
+        "detail": [
+            {
+                "loc": ["body", "username"],
+                "msg": "only alphanumeric, underscore and hyphen is ok",
+                "type": "value_error",
+            },
+            {
+                "loc": ["body", "email"],
+                "msg": "illegal email format",
+                "type": "value_error",
+            },
+        ]
+    }
+
+    assert r.status_code == 422
+    assert json == expected
+
+
 def test_create_user_by_admin_check_request_body_type(
-    client: TestClient, create_root_and_guest_user, admin_token_headers
+    client: TestClient, admin_token_headers
 ):
     data = {
         "username": 1,
@@ -67,13 +222,13 @@ def test_create_user_by_admin_check_request_body_type(
 
 
 def test_create_exists_user_by_admin_return_422_error(
-    client: TestClient, create_root_and_guest_user, admin_token_headers
+    client: TestClient, admin_token_headers
 ):
     data = {
         "username": "john",
         "email": "john@example.com",
         "account_name": "ジョン",
-        "password": "plain",
+        "password": "plainpassword",
     }
 
     r = client.post("/users", headers=admin_token_headers, json=data)
@@ -84,13 +239,13 @@ def test_create_exists_user_by_admin_return_422_error(
 
 
 def test_create_user_by_guest_returns_401_error(
-    client: TestClient, create_root_and_guest_user, guest_token_headers
+    client: TestClient, guest_token_headers
 ):
     data = {
         "username": "anny",
         "email": "anny@example.com",
         "account_name": "アニー",
-        "password": "plain",
+        "password": "plainpassword",
     }
 
     r = client.post("/users", headers=guest_token_headers, json=data)

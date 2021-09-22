@@ -109,10 +109,14 @@ def create_root_and_guest_user() -> None:
 
 
 @pytest.fixture(scope="module")
-def admin_token_headers(client: TestClient) -> Dict[str, str]:
+def admin_token_headers(
+    client: TestClient, create_root_and_guest_user
+) -> Dict[str, str]:
     return get_admin_token_headers(client=client)
 
 
 @pytest.fixture(scope="module")
-def guest_token_headers(client: TestClient) -> Dict[str, str]:
+def guest_token_headers(
+    client: TestClient, create_root_and_guest_user
+) -> Dict[str, str]:
     return get_guest_token_headers(client=client)

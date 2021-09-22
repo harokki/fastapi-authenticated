@@ -107,7 +107,7 @@ def test_create_user(db: DbFixtureType):
         "email": "emma@example.com",
         "account_name": "エマ",
         "is_active": "True",
-        "password": "plain",
+        "password": "plainplain",
         "created_by": "john",
     }
     user = UserCreateSchema(**data)
@@ -123,7 +123,7 @@ def test_create_user(db: DbFixtureType):
     assert got_user.email == "emma@example.com"
     assert got_user.account_name == "エマ"
     assert got_user.is_active is True
-    assert got_user.hashed_password != "plain"
+    assert got_user.hashed_password != "plainplain"
     assert got_user.created_by == "john"
     assert got_user.created_at
     assert got_user.updated_by == "john"

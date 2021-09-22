@@ -24,7 +24,7 @@ repos:
           [
             --max-line-length,
             "88",
-            "--ignore=E402,B008,CCR001,E800,A003",
+            "--ignore=E402,B008,CCR001,E800,A003, N805",
             --max-complexity,
             "10",
             --max-expression-complexity=7,
