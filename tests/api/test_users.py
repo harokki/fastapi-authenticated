@@ -271,6 +271,7 @@ def test_get_users(client: TestClient, admin_token_headers):
     assert user1["email"] == "john@example.com"
     assert user1["account_name"] == "ジョン"
     assert user1["is_active"] is True
+    assert user1["roles"] == ["Admin"]
     assert user1["created_at"]
     assert user1["created_by"] == "default"
     assert user1["updated_at"]
@@ -280,6 +281,7 @@ def test_get_users(client: TestClient, admin_token_headers):
     assert user2["email"] == "emma@example.com"
     assert user2["account_name"] == "エマ"
     assert user2["is_active"] is True
+    assert user2["roles"] == []
     assert user2["created_at"]
     assert user2["created_by"] == "default"
     assert user2["updated_at"]

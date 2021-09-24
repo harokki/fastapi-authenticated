@@ -9,6 +9,7 @@ from sqlalchemy.orm import relationship, validates
 from app.database import Base
 from app.domains.exceptions import ValidationError
 from app.domains.validations import check_length
+from app.schemas.user import UserWithRoleSchema
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
@@ -69,6 +70,21 @@ class User(Base):
         for user_role in self.user_role:
             role_names.append(user_role.role.name)
         return role_names
+
+    def get_user_with_roles(self) -> UserWithRoleSchema:
+        return UserWithRoleSchema(
+            **{
+                "username": self.username,
+                "email": self.email,
+                "account_name": self.account_name,
+                "is_active": self.is_active,
+                "roles": self.get_role_names(),
+                "created_at": self.created_at,
+                "created_by": self.created_by,
+                "updated_at": self.updated_at,
+                "updated_by": self.updated_by,
+            }
+        )
 
     @validates("username")
     def validate_username(self, _, value):

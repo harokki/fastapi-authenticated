@@ -9,7 +9,12 @@ from app.containers import Container
 from app.domains.constants.role import Role
 from app.domains.entities.user import User
 from app.domains.exceptions import DuplicationError, ValidationError
-from app.schemas.user import UserAPICreateSchema, UserCreateSchema, UserSchema
+from app.schemas.user import (
+    UserAPICreateSchema,
+    UserCreateSchema,
+    UserSchema,
+    UserWithRoleSchema,
+)
 
 router = APIRouter()
 
@@ -20,7 +25,7 @@ async def read_users_me(current_user: User = Depends(get_current_active_user)):
     return current_user
 
 
-@router.get("/users", response_model=List[UserSchema])
+@router.get("/users", response_model=List[UserWithRoleSchema])
 @inject
 async def get_users(
     skip: int = 0,

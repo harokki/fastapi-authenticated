@@ -170,3 +170,25 @@ def test_validate_created_by(created_by, message):
     assert ex_info.value.expression == created_by
     assert ex_info.value.code == "VALIDATION_ERROR"
     assert ex_info.value.message == message
+
+
+def test_get_user_with_roles():
+    user = User(
+        username="john",
+        email="john@example.com",
+        account_name="ジョン",
+        hashed_password="aaaaa",
+        created_by="john",
+    )
+
+    user_with_roles = user.get_user_with_roles()
+
+    assert user_with_roles.username == "john"
+    assert user_with_roles.email == "john@example.com"
+    assert user_with_roles.account_name == "ジョン"
+    assert user_with_roles.is_active is True
+    assert user_with_roles.roles == []
+    assert user_with_roles.created_by == "john"
+    assert user_with_roles.created_at
+    assert user_with_roles.updated_by == "john"
+    assert user_with_roles.updated_at

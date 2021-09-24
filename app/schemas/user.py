@@ -1,5 +1,6 @@
 import re
 from datetime import datetime
+from typing import List
 
 from pydantic import BaseModel, constr, validator
 
@@ -43,6 +44,15 @@ class UserSchema(UserBaseSchema):
 
     class Config:
         orm_mode = True
+
+
+class UserWithRoleSchema(UserBaseSchema):
+    is_active: bool
+    roles: List[str]
+    created_at: datetime
+    created_by: str
+    updated_at: datetime
+    updated_by: str
 
 
 class UserRoleSchema(BaseModel):
