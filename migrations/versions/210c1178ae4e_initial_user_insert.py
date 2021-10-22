@@ -11,6 +11,8 @@ from alembic import op
 from sqlalchemy import TIMESTAMP, Boolean, String
 from sqlalchemy.sql import column, table
 
+from app.domains.entities.user import User
+
 # revision identifiers, used by Alembic.
 revision = "210c1178ae4e"
 down_revision = "a14af6cf667e"
@@ -34,7 +36,7 @@ user_table = table(
 
 def upgrade():
     now = datetime.now(timezone.utc)
-    hashed = "$2b$12$EixZaYVK1fsbw1ZfbX3OXePaWxn96p36WQoeG6Lruj3vjPGga31lW"
+    hashed = User.get_hashed_password("plain")
     op.bulk_insert(
         user_table,
         [

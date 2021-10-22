@@ -9,6 +9,22 @@ FastAPI の JWT 認証の試し
 > pre-commit install
 ```
 
+## 起動
+
+```bash
+> poetry run task start
+```
+
+## API 通信
+
+ログイン
+
+```bash
+> curl \
+    -X POST http://localhost:8000/token \
+    -d 'username=john' -d 'password=plain'
+```
+
 ## alembic
 
 ```bash
